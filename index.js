@@ -1,40 +1,33 @@
-const VueComponentAutoloaderPlugin = require('./lib/plugin')
-const { camelize, capitalize, hyphenate } = require('./utils')
-const checkComponent = require('./lib/checkComponent.js')
+const RuleSet = require('webpack/lib/RuleSet')
 
-const def = function({camelTag}, {name, path}) {
+class VueAutomato {
+  constructor (options) {
+    this.options = options
+  }
 
-  if (!checkComponent('./src' + path, name, '.vue'))
-    return false
+  apply (compiler) {
+    // use webpack's RuleSet utility to normalize user rules
+    const rawRules = compiler.options.module.rules
+    const { rules } = new RuleSet(rawRules)
 
-  return {
-    comp: camelTag,
-    from: `@${path + name}.vue`
+    // find the rule that applies to vue files
+    let vueRuleIndex = rules.findIndex(rule => rule.use && rule.use.find(u => u.loader === 'vue-loader'))
+    const vueRule = rules[vueRuleIndex]
+
+    if (!vueRule) {
+      throw new Error(
+        `[VueAutomato Error] No matching rule for vue-loader found.\n` +
+        `Make sure there is at least one root-level rule that uses vue-loader.`
+      )
+    }
+
+    vueRule.use.unshift({
+      loader: require.resolve('./loader'),
+      options: this.options
+    })
+
+    compiler.options.module.rules = rules
   }
 }
 
-module.exports = function (prefixes) {
-  return new VueComponentAutoloaderPlugin({
-    match ({tag: originalTag, ...node}, opts) {
-
-      let kebabTag = hyphenate(originalTag)
-      let camelTag = capitalize(camelize(originalTag))
-
-      for (const prefix in prefixes) {
-        if (!kebabTag.startsWith(prefix)) continue
-
-        opts.prefix = prefix
-        opts.name = kebabTag.substring(prefix.length)
-        opts.def = def
-        opts.prefixes = prefixes
-        
-        if (typeof prefixes[prefix] === "function")
-          return prefixes[prefix]({originalTag, kebabTag, camelTag}, opts, node)
-        
-        opts.path = prefixes[prefix] + opts.name.split('-', 1)[0] + '/'
-        return def({originalTag, kebabTag, camelTag}, opts, node)
-      }
-    }
-  })
-}
-
+module.exports = VueAutomato
