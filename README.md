@@ -13,7 +13,7 @@ const {camelize} = require('vue-automato/util')
 
 const autoloaderPlugin = new VueAutomato({
   match({tag}) {
-    if (!tag.startWith('app-')) return false
+    if (!tag.startsWith('app-')) return false
 
     let result = {}
     let camelTag = camelize(tag)
