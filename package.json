@@ -1,0 +1,25 @@
+{
+  "name": "vue-automato",
+  "version": "0.0.1",
+  "description": "A tool for creating plug-ins for atomic local registration of components and directives",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "vue",
+    "components",
+    "directives",
+    "autoloading"
+  ],
+  "author": "HeadMad",
+  "license": "MIT",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "loader-utils": "^1.1.0",
+    "vue-template-compiler": "^2.6.6",
+    "webpack": "^4.20.2"
+  },
+  "eslintConfig": {}
+}
