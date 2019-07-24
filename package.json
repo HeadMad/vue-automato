@@ -1,6 +1,6 @@
 {
   "name": "vue-automato",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A tool for creating plug-ins for automatic local registration of components and directives",
   "main": "index.js",
   "scripts": {

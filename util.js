@@ -22,13 +22,22 @@ function requirePeer (name) {
     return require(name)
   } catch (e) {
     if (e.code !== 'MODULE_NOT_FOUND') throw e
-    throw new Error(`Module "${name}" required by "vue-component-autoloader" not found.`)
+    throw new Error(`Module "${name}" required by "vue-automato" not found.`)
   }
+}
+
+function requireLazy(path) {
+  return new Proxy({path}, {
+    apply({path}, undefined, args) {
+      return require(path)(...args)
+    }
+  })
 }
 
 module.exports = {
   camelize,
   capitalize,
   hyphenate,
-  requirePeer
+  requirePeer,
+  requireLazy
 }
