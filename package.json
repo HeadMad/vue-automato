@@ -21,10 +21,14 @@
     "webpack": "^4.20.2"
   },
   "eslintConfig": {
-    
+
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/HeadMad/vue-automato.git"
-  }
+    "url": "git+https://github.com/HeadMad/vue-automato.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HeadMad/vue-automato/issues"
+  },
+  "homepage": "https://github.com/HeadMad/vue-automato#readme"
 }

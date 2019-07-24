@@ -12,7 +12,8 @@ const VueAutomato = require('vue-automato')
 const {camelize} = require('vue-automato/util')
 
 const autoloaderPlugin = new VueAutomato({
-  match({tag}) {
+  match(node, {rootPath, parentPath}) {
+    let tag = node.tag
     if (!tag.startsWith('app-')) return false
 
     let result = {}
@@ -35,17 +36,17 @@ module.exports = {
 
 ## Parameters
 
-* **match**
+- **match**
 <br> Function. of processing each occurrence of the tag, taking three arguments:
-  * **node**
+  - **node**
   <br> Object. The node of this tag is from the virtual tree
-    * **node.tag**
+    - **node.tag**
     <br> String. The name of the current tag
-    * *coming soon*
+    - *coming soon*
     <br> 
-  * **params**
+  - **params**
   <br> Object. Additional parameter including:
-    * **params.rootPath**
+    - **params.rootPath**
     <br> String. Full path to the root directory of the project
-    * **params.parentPath**
+    - **params.parentPath**
     <br> String. The path to the parent vue file relative to the root directory of the project
