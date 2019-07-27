@@ -1,6 +1,14 @@
 # vue-automato
 
-The `vue-automato` is a tool for creating plug-ins for automatic local registration of components and directives.
+The `vue-automato` is a tool for creating plug-ins for automatic local registration of components and directives and more...
+
+## Installation
+
+`npm install vue-automato --save-dev`
+<br>or last develop version
+<br>`npm install headmad/vue-automato --save-dev`
+
+---
 
 You can use it directly from the vue-project configuration file.
 <br> _This example will automatically search for components whose tag starts on the "app-" and load them locally_
@@ -43,7 +51,6 @@ The argument takes an `Object` with one method - `match`, which in turn has argu
   <br> `String`. Tag in kebab-case style (_app-header-title_)
   - **tag.camelTag**
   <br> `String`. came-case style (_AppHeaderTitle_)
-
 - **params**
 <br> `Object`. Additional parameter including:
   - **params.className**
@@ -54,14 +61,12 @@ The argument takes an `Object` with one method - `match`, which in turn has argu
   - **params.props**
   <br> `Array`. The attributes of the tag, except for _directives_ and attributes _class_, _style_
   <br>`[{ name, arg, isDynamicArg, mods, value }, ...]`
-
 - **node**
 <br> `Object`. The node of this tag is from the virtual tree
   - **node.tag**
   <br> `String`. The name of the current tag
   - *coming soon...*
   <br>
-
 - **link**
 <br> `Object`. Additional object that links all tags in a component
   - **params.rootPath**
