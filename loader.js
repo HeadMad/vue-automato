@@ -110,8 +110,8 @@ module.exports = async function (content, sourceMap) {
   if (!Array.isArray(options.match)) options.match = [options.match]
 
   if (this.resourceQuery)
-    return null
-    
+    return this.callback(null, content, sourceMap)
+  
   const readFile = path => new Promise((resolve, reject) => {
     this.fs.readFile(path, function (err, data) {
       if (err) reject(err)
@@ -125,7 +125,7 @@ module.exports = async function (content, sourceMap) {
   const component = compiler.parseComponent(file)
   
   if (!component.template)
-    return null
+    return this.callback(null, content, sourceMap)
 
   if (component.template.src) {
     const externalFile = path.resolve(path.dirname(this.resourcePath), component.template.src);
