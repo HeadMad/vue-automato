@@ -215,6 +215,5 @@ module.exports = async function (content, sourceMap) {
   })
 
   content = install(content, getMatches.call(this, installNodes, options.match))
-  console.log(content)
   this.callback(null, content, sourceMap)
 }
