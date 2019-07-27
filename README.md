@@ -65,7 +65,6 @@ The argument takes an `Object` with one method - `match`, which in turn has argu
   - **node.tag**
   <br> `String`. The name of the current tag
   - *coming soon...*
-  <br>
 - **link**
 <br> `Object`. Additional object that links all tags in a component
   - **params.rootPath**
