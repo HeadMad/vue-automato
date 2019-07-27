@@ -22,7 +22,7 @@ class VueAutomato {
     }
 
     vueRule.use.unshift({
-      loader: require.resolve('./lib/loader.js'),
+      loader: require.resolve('./loader.js'),
       options: this.options
     })
 
