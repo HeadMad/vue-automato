@@ -5,7 +5,6 @@ The `vue-automato` is a tool for creating plug-ins for automatic local registrat
 ## Installation
 
 `npm install vue-automato --save-dev`
-<br>or last develop version
 <br>`npm install headmad/vue-automato --save-dev`
 
 ---
