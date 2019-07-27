@@ -7,6 +7,23 @@ const instalatorPath = require.resolve('./lib/runtimeInstall.js')
 
 
 /* HELPERS START */
+
+function _wrapInstallNames(install, names) {
+  let namesString
+  if (['components', 'props', 'directives', 'filters', 'methods', 'computed'].indexOf(install) !== -1) {
+    namesString = '{' + names.join(',') + '}'
+
+  } else if (install === 'mixins' || names.length > 1) {
+    install = 'mixins'
+    namesString = '[' + names.join(',') + ']'
+
+  } else {
+    namesString = names
+  }
+
+  return [install, namesString]
+}
+
 function _makeInstallsArray(imports) {
   let installs = imports.reduce((inst, imp) => {
     if (!imp.install || !imp.name) return inst
@@ -21,7 +38,9 @@ function _makeInstallsArray(imports) {
 
   let result = []
   for (let i in installs) {
-    result.push(`runtimeInstall("${i}", component, {${installs[i].join(',')}})`)
+    let wrap = _wrapInstallNames(i, installs[i])
+
+    result.push(`runtimeInstall("${wrap[0]}", component, ${wrap[1]})`)
   }
 
   return result
@@ -67,12 +86,14 @@ function getMatches (items, matches) {
     }
   });
 
-  let filtredImports = imports.filter(({name}) => {
+  // remove imports with same names
+  let filtredImports = imports.filter(function({name}) {
     if (!name) return true
-    if (this.indexOf(name) === -1) this.push(name)
+    if (this.indexOf(name) !== -1) return false
+    this.push(name)
     return true
   }, [])
-  
+
   return filtredImports
 }
 
