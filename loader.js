@@ -110,7 +110,7 @@ module.exports = async function (content, sourceMap) {
   if (!Array.isArray(options.match)) options.match = [options.match]
 
   if (this.resourceQuery)
-    return this.callback(null, content, sourceMap)
+    return null
     
   const readFile = path => new Promise((resolve, reject) => {
     this.fs.readFile(path, function (err, data) {
@@ -125,7 +125,7 @@ module.exports = async function (content, sourceMap) {
   const component = compiler.parseComponent(file)
   
   if (!component.template)
-    return this.callback(null, content, sourceMap)
+    return null
 
   if (component.template.src) {
     const externalFile = path.resolve(path.dirname(this.resourcePath), component.template.src);
@@ -185,6 +185,5 @@ module.exports = async function (content, sourceMap) {
   })
 
   content = install(content, getMatches.call(this, installNodes, options.match))
-  
   this.callback(null, content, sourceMap)
 }

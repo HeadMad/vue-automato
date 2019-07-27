@@ -27,7 +27,8 @@ const autoloaderPlugin = new VueAutomato({
     
     result.name = tag.camelTag
     result.src = `@/components/${tag.kebabTag}.vue`
-
+    result.install = 'components'
+    
     return result
   }
 })
