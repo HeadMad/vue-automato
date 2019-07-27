@@ -47,7 +47,7 @@ function _makeCodesArray(imports) {
 
 
 function getMatches (items, matches) {
-  const imports = []
+  let imports = []
 
   let ghost = {}
   items.forEach(({tag, node, ...params}) => {
@@ -59,12 +59,21 @@ function getMatches (items, matches) {
       let match = matcher(tag, params, node, ghost)
       if (!match) continue
 
+      if (Array.isArray(match))
+      imports = imports.concat(match)
+
+      else
       imports.push(match)
     }
-    
   });
 
-  return imports
+  let filtredImports = imports.filter(({name}) => {
+    if (!name) return true
+    if (this.indexOf(name) === -1) this.push(name)
+    return true
+  }, [])
+  
+  return filtredImports
 }
 
 function install (content, imports) {
@@ -185,5 +194,6 @@ module.exports = async function (content, sourceMap) {
   })
 
   content = install(content, getMatches.call(this, installNodes, options.match))
+  console.log(content)
   this.callback(null, content, sourceMap)
 }
