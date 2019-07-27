@@ -49,13 +49,14 @@ function _makeCodesArray(imports) {
 function getMatches (items, matches) {
   const imports = []
 
+  let ghost = {}
   items.forEach(({tag, node, ...params}) => {
     for (let matcher of matches) {
 
-      let rootPath = this.rootContext
-      let filePath = this.resourcePath.substring(this.rootContext.length + 1)
+      ghost.rootPath = this.rootContext
+      ghost.filePath = this.resourcePath.substring(this.rootContext.length + 1)
 
-      let match = matcher(tag, params, node, {rootPath, filePath})
+      let match = matcher(tag, params, node, ghost)
       if (!match) continue
 
       imports.push(match)
@@ -152,7 +153,16 @@ module.exports = async function (content, sourceMap) {
         }
 
         if (node.directives) {
-          directives = node.directives
+          directives = node.directives.map(({name, arg, isDynamicArg, modifiers, value}) => {
+            let mods
+            if (modifiers) {
+              mods = []
+              for (const mod in modifiers) 
+              mods.push(mod)
+            }
+            
+            return {name, arg, isDynamicArg, mods, value}
+          })
         }
 
         // get props of tag

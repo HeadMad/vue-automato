@@ -1,15 +1,13 @@
 {
   "name": "vue-automato",
   "version": "1.0.0",
-  "description": "A tool for creating plug-ins for automatic local registration of components and directives",
+  "description": "A tool for creating plug-ins for automatic local registration of components and directives and more...",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "vue",
-    "components",
-    "directives",
     "autoloading"
   ],
   "author": "HeadMad",
