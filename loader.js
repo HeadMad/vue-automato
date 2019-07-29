@@ -2,7 +2,7 @@ const path = require('path')
 const loaderUtils = require('loader-utils')
 const compiler = require('vue-template-compiler')
 
-const { requirePeer, camelize, capitalize, hyphenate } = require('./util')
+const { requirePeer, camelize, capitalize, hyphenate, is } = require('./util')
 const instalatorPath = require.resolve('./lib/runtimeInstall.js')
 
 
@@ -10,7 +10,8 @@ const instalatorPath = require.resolve('./lib/runtimeInstall.js')
 
 function _wrapInstallNames(install, names) {
   let namesString
-  if (['components', 'props', 'directives', 'filters', 'methods', 'computed'].indexOf(install) !== -1) {
+  if (['components', 'props', 'directives',
+  'filters', 'methods', 'computed'].indexOf(install) !== -1) {
     namesString = '{' + names.join(',') + '}'
 
   } else if (install === 'mixins' || names.length > 1) {
@@ -24,42 +25,60 @@ function _wrapInstallNames(install, names) {
   return [install, namesString]
 }
 
-function _makeInstallsArray(imports) {
-  let installs = imports.reduce((inst, imp) => {
-    if (!imp.install || !imp.name) return inst
+function _makeInstallsArray(installs) {
+  // remove duplicates from installs
+  let installsArray = installs.reduce((res, {install, value}) => {
+    if (!res[install]) {
+      res[install] = [value]
+      return res
+    }
+    if (res[install].indexOf(value) === -1)
+      res[install].push(value)
 
-    let i = imp.install
-    let n = imp.name
-
-    if (!inst[i]) inst[i] = [n]
-    if (inst[i].indexOf(n) === -1) inst[i].push(n)
-    return inst
+    return res
   }, {})
 
   let result = []
-  for (let i in installs) {
-    let wrap = _wrapInstallNames(i, installs[i])
+  for (let install in installsArray) {
+    let wrap = _wrapInstallNames(install, installsArray[install])
 
-    result.push(`runtimeInstall("${wrap[0]}", component, ${wrap[1]})`)
+    result.push(`runtimeInstall("${wrap[0]}", ${wrap[1]})`)
   }
 
   return result
 }
 
-function _makeCodesArray(imports) {
-  let codes = imports.reduce((res, imp) => {
-    if (imp.code && imp.name)
-      res.push(`const ${imp.name} = ${imp.code}`)
+// define the implantable code
+function _makeInsertedCodeArray(imports) {
+  let codes = imports.reduce((res, {install, name, code, src}) => {
+    let push
+    if (!install) {                                        // !install
+      if (code) res.codes.push(code)                       // !install && code   
 
-    else if (imp.code)
-      res.push(imp.code)
+    } else if (name) {                                     // install && name
+      if (src) {                                           // install && name && src
+        res.imports.push(`import ${name} from "${src}"`)
+        res.installs.push({install, value: name})
 
-    else if (imp.src && imp.name)
-      res.push(`import ${imp.name} from "${imp.src}"`)
+        if (code) res.codes.push(code)                     // install && name && src && code
+        
+      } else if (code) {                                   // install && name && !src && code
+        res.consts.push(`const ${name} = ${code}`)
+        res.installs.push({install, value: name})
+      } 
+      
+    } else if (src) {                                      // install && !name && src
+      res.installs.push({install, value: src})
+      if (code) res.codes.push(code)                       // install && !name && src && code
+      
+    } else if (code) {                                     // install && !name && !src && code 
+      res.installs.push({install, value: code})
+    }
 
     return res
-  }, [])
+  }, {imports: [], consts: [], codes:[], installs: []})
 
+  codes.installs = _makeInstallsArray(codes.installs)
   return codes
 }
 /* HELPERS END */
@@ -101,19 +120,15 @@ function install (content, imports) {
   if (!imports.length) return content
   
   let hotReload = '/* hot reload */'
-
-  let runtimeInstall = imports.some(imp => imp.install && imp.name)
-  ? 'import runtimeInstall from ' + loaderUtils.stringifyRequest(this, '!' + instalatorPath)
-  : ''
-
-  let installs = _makeInstallsArray(imports)
-  let codes = _makeCodesArray(imports)
+  let code = _makeInsertedCodeArray(imports)
   
   let newContent = [
     '/* vue-automato */',
-    ...[runtimeInstall],
-    ...codes,
-    ...installs,
+    'const runtimeInstall = require(' + loaderUtils.stringifyRequest(this, '!' + instalatorPath) + ')(component)',
+    ...code.imports,
+    ...code.consts,
+    ...code.codes,
+    ...code.installs,
     '\n',
     hotReload
   ].join('\n')

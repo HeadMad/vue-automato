@@ -37,6 +37,15 @@ function requireLazy(path) {
   );
 }
 
+const is = new Proxy(obj => Object.prototype.toString.call(obj).slice(8, -1), {
+  get(target, prop) {
+    return obj => target(obj) === prop
+  },
+  apply(target, thisArg, args) {
+    return target(...args)
+  }
+})
+
 if (true)
   console.log('hi')
 
@@ -45,5 +54,6 @@ module.exports = {
   capitalize,
   hyphenate,
   requirePeer,
-  requireLazy
+  requireLazy,
+  is
 };
